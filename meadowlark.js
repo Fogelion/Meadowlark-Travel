@@ -1,14 +1,7 @@
 const express = require('express');
 const handlebars = require('express-handlebars')
 	.create({ defaultLayout:'main' });
-
-const fortunes = [
-	"Победи свои страхи, или они победят тебя.",
-	"Рекам нужны истоки.",
-	"Не бойся неведомого.",
-	"Тебя ждет приятный сюрприз.",
-	"Будь проще везде, где только можно.",
-];
+const fortunes = require('./lib/fortune.js');
 
 const app = express();
 
@@ -17,22 +10,22 @@ app.set('view engine', 'handlebars');
 app.set('port', process.env.PORT || 3000);
 
 app.use(express.static(__dirname + '/public'));
-app.get('/', function(req, res){
+app.get('/', (req, res) => {
 	res.render('home');
 });
-app.get('/about', function(req, res){
+app.get('/about', (req, res) => {
 	var randomFortune =
 		fortunes[Math.floor(Math.random() * fortunes.length)];
-	res.render('about', { fortune: randomFortune });
+	res.render('about', { fortune: fortunes.getFortune() });
 });
 
 // пользовательская страница 404
-app.use(function(req, res){
+app.use((req, res) => {
 	res.status(404);
 	res.render('404');
 });
 // пользовательская страница 500
-app.use(function(err, req, res, next){
+app.use((err, req, res, next) => {
 	console.error(err.stack);
 	res.status(500);
 	res.render('500');
@@ -40,7 +33,7 @@ app.use(function(err, req, res, next){
 
 
 
-app.listen(app.get('port'), function(){
+app.listen(app.get('port'), () => {
 	console.log( 'Express запущен на http://localhost:' +
 		app.get('port') + '; нажмите Ctrl+C для завершения.' );
 });
